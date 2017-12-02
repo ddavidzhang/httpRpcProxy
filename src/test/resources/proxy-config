@@ -1,0 +1,5 @@
+Hello:
+  address: localhost:8080
+  grey: false
+  betaAddress:
+  socketTimeOut: 30000
