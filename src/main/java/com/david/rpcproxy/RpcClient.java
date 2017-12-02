@@ -117,7 +117,7 @@ public class RpcClient {
 
 
     public <A, R> R post(String serviceKey, String uri, Map<String, String> headers, A arg, Class<R> clazz) {
-        DefaultFsiResponseHandler<R> handler = new DefaultFsiResponseHandler<>(uri, clazz);
+        DefaultRpcResponseHandler<R> handler = new DefaultRpcResponseHandler<>(uri, clazz);
         try {
             return post(serviceKey, uri, headers, arg, handler);
         } catch (IOException e) {
@@ -155,12 +155,12 @@ public class RpcClient {
         }
     }
 
-    public static final class DefaultFsiResponseHandler<T> implements ResponseHandler<T> {
+    public static final class DefaultRpcResponseHandler<T> implements ResponseHandler<T> {
 
         private Class<T> clazz;
         private String uri;
 
-        public DefaultFsiResponseHandler(String uri, Class<T> clazz) {
+        public DefaultRpcResponseHandler(String uri, Class<T> clazz) {
             this.uri = uri;
             this.clazz = clazz;
         }
@@ -180,7 +180,7 @@ public class RpcClient {
             //process no ok
             if (statusCode != HttpStatus.SC_OK) {
                 String statusValue = rpcStatus != null ? rpcStatus.getValue() : "";
-                throw new RpcClientException("StatusCode:" + statusCode + " FsiStatus:" + statusValue + ",Message:" +
+                throw new RpcClientException("StatusCode:" + statusCode + " RpcStatus:" + statusValue + ",Message:" +
                         EntityUtils.toString(response.getEntity()) + ",url:" + this.uri);
             }
 
@@ -201,13 +201,13 @@ public class RpcClient {
                 case failure:
                     int code = Integer.parseInt(response.getFirstHeader(RPC_CODE).getValue());
                     String message = EntityUtils.toString(response.getEntity(), Charsets.UTF_8);
-                    throw new RpcClientException(code, "FsiFailure,Code:" + code + ",Message:" + message + ",url:" + this.uri);
+                    throw new RpcClientException(code, "RpcFailure,Code:" + code + ",Message:" + message + ",url:" + this.uri);
                 case error:
                     String error = response.getFirstHeader(RPC_CONTENT).getValue();
                     throw new RpcClientException(
-                            "FsiError:" + error + ",response:" + EntityUtils.toString(response.getEntity()) + ",url:" + this.uri);
+                            "RpcError:" + error + ",response:" + EntityUtils.toString(response.getEntity()) + ",url:" + this.uri);
                 default:
-                    throw new RpcClientException("FsiStatus:" + status + ",url:" + this.uri);
+                    throw new RpcClientException("RpcStatus:" + status + ",url:" + this.uri);
             }
         }
     }

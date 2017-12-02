@@ -10,7 +10,7 @@ public class RpcServiceProxyFactoryBean<T> implements FactoryBean<T> {
     private Class<T> type;
     @Override
     public T getObject() throws Exception {
-        return factory.newFsiServiceProxy(type);
+        return factory.newRpcServiceProxy(type);
     }
 
     @Override

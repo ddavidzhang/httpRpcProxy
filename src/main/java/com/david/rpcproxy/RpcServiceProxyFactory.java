@@ -30,16 +30,16 @@ public class RpcServiceProxyFactory {
         loadConfig();
     }
 
-    public <T> T newFsiServiceProxy(Class<T> clazz) {
+    public <T> T newRpcServiceProxy(Class<T> clazz) {
         return Reflection.newProxy(clazz, (Object proxy, Method method, Object[] args) -> {
             RpcService rpcService = method.getDeclaringClass().getDeclaredAnnotation(RpcService.class);
-            RpcUri fsiUri = method.getDeclaredAnnotation(RpcUri.class);
+            RpcUri rpcUri = method.getDeclaredAnnotation(RpcUri.class);
 
             if (rpcService == null) {
                 throw new RpcProxyException("UnsupportedInterface, Lack Annotation");
             }
 
-            if (fsiUri == null) {
+            if (rpcUri == null) {
                 throw new RpcProxyException("UnsupportedMethod,Lack Annotation");
             }
 
@@ -47,7 +47,7 @@ public class RpcServiceProxyFactory {
             //headers.put("Content-Type", "application/octet-stream");
             headers.put("Content-Type", "application/json");
 
-            String serviceUrl = createServiceUrl(getServiceAddress(rpcService.value()), fsiUri.value());
+            String serviceUrl = createServiceUrl(getServiceAddress(rpcService.value()), rpcUri.value());
 
             if (args == null) {
                 throw new RpcProxyException("ArgsIsNull");
@@ -88,7 +88,7 @@ public class RpcServiceProxyFactory {
             serviceMap.put(key, serviceConfig);
         }
 
-        log.info("End load fsi service config, configKey:{}, config:{}", configKey, serviceMap);
+        log.info("End load rpc service config, configKey:{}, config:{}", configKey, serviceMap);
     }
 
     protected String getServiceAddress(String serviceName) {
